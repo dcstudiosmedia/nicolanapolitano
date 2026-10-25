@@ -1,0 +1,244 @@
+/* Nicola Napolitano — buio, pulviscolo di luce, capitoli a tutto schermo. L'unico colore è il verde HVCKLIFE */
+:root {
+  --ink: #050505;
+  --paper: #efece6;
+  --mute: rgba(239, 236, 230, .5);
+  --dim: rgba(239, 236, 230, .16);
+  --line: rgba(239, 236, 230, .12);
+  --acid: #b5fe3d;
+  --sans: "Archivo", system-ui, sans-serif;
+  --serif: var(--sans);
+  --gutter: clamp(16px, 3.4vw, 56px);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+/* niente selezione, niente menu tenendo premuto: si scorre senza prendere niente per sbaglio */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+img { -webkit-user-drag: none; user-select: none; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+em { font-style: normal; }
+::selection { background: var(--paper); color: var(--ink); }
+
+/* titoli: lettere strette e forti accanto al corsivo, come 25 residences */
+.sans { font-family: var(--sans); }
+.label {
+  margin: 0;
+  font-size: 10px; letter-spacing: .34em; text-transform: uppercase; color: var(--mute);
+}
+
+/* ---------- grana e cursore ---------- */
+.grain {
+  position: fixed; inset: -50%; z-index: 60; pointer-events: none; opacity: .06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(4) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); } 25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); } 75% { transform: translate(-2%, -1%); } 100% { transform: translate(0, 0); }
+}
+.cursor {
+  position: fixed; top: 0; left: 0; z-index: 70; pointer-events: none;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+  background: var(--paper); mix-blend-mode: difference; opacity: 0;
+  transition: width .5s var(--ease), height .5s var(--ease), margin .5s var(--ease), opacity .4s;
+}
+.cursor.is-on { opacity: 1; }
+.cursor.is-link { width: 46px; height: 46px; margin: -23px 0 0 -23px; }
+@media (hover: none) { .cursor { display: none; } .grain { animation: none; } }
+
+main, .footer { position: relative; z-index: 1; }
+
+/* ---------- foto e nome ---------- */
+.hero { position: relative; height: 100svh; }
+.hero__stage { position: relative; height: 100svh; overflow: hidden; }
+.hero__light {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(42vmax 34vmax at 54% 34%, rgba(239, 236, 230, .13), transparent 70%),
+    radial-gradient(30vmax 22vmax at 30% 70%, rgba(239, 236, 230, .04), transparent 70%);
+  opacity: 0; transition: opacity 2.4s ease .2s;
+}
+.hero__figure {
+  position: absolute; z-index: 1; left: 50%; bottom: 0;
+  height: min(104svh, 130vw); width: auto; max-width: none;
+  transform: translateX(-50%) translateY(-4%) scale(1.08);
+  transform-origin: 50% 40%;
+  filter: grayscale(1) contrast(1.08) brightness(.92);
+  -webkit-mask-image: linear-gradient(100deg, #000 40%, transparent 60%);
+  mask-image: linear-gradient(100deg, #000 40%, transparent 60%);
+  -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+  -webkit-mask-position: 100% 0; mask-position: 100% 0;
+  transition: -webkit-mask-position 2.6s cubic-bezier(.6, 0, .2, 1) .3s, mask-position 2.6s cubic-bezier(.6, 0, .2, 1) .3s;
+}
+.hero__figure--blur { z-index: 1; opacity: 0; will-change: opacity; }
+.is-ready .hero__figure--blur { -webkit-mask-position: 0 0; mask-position: 0 0; }
+.hero__veil {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to top, var(--ink) 0, rgba(5, 5, 5, .55) 22%, transparent 48%);
+}
+/* il nome gigante che scorre sopra la faccia, in negativo dove passa sul volto */
+.hero__name {
+  position: absolute; z-index: 3; left: 0; right: 0; top: 61svh;
+  margin: 0; overflow: hidden; pointer-events: none;
+  font-family: var(--sans); font-weight: 500; font-size: 19vw; line-height: 1; letter-spacing: -.04em; text-transform: uppercase;
+  color: #fff; mix-blend-mode: difference;
+  opacity: 0; transition: opacity 2s ease .6s;
+}
+.hero__track { display: flex; width: max-content; animation: marquee 38s linear infinite; }
+.hero__track span { padding-right: .35em; white-space: nowrap; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.hero__track--rev { animation-direction: reverse; }
+.hero__track--last, .hero__back { display: none; }
+/* «Nicola» dietro la testa, solo sul telefono */
+.hero__back {
+  position: absolute; z-index: 0; left: 0; right: 0; overflow: hidden; pointer-events: none;
+  font-family: var(--sans); font-weight: 500; line-height: 1; letter-spacing: -.04em; text-transform: uppercase;
+  color: rgba(239, 236, 230, .9);
+  opacity: 0; transition: opacity 2s ease .6s;
+}
+.is-ready .hero__back { opacity: 1; }
+
+.is-ready .hero__light { opacity: 1; }
+.is-ready .hero__figure { -webkit-mask-position: 0 0; mask-position: 0 0; }
+.is-ready .hero__name { opacity: 1; }
+.is-ready 
+/* ---------- storia ---------- */
+.prologue {
+  display: grid; justify-items: center; gap: 34px; text-align: center;
+  padding: clamp(140px, 26svh, 260px) var(--gutter) clamp(120px, 22svh, 220px);
+}
+.prologue__title, .chapter__title {
+  margin: 0; font-weight: 500; line-height: .95; letter-spacing: -.04em;
+}
+.prologue__title { font-size: clamp(52px, 8.6vw, 150px); }
+.prologue__title em, .chapter__title em { color: var(--mute); }
+
+.chapter { position: relative; }
+/* titolo, foto e testo alla stessa distanza dalla foto */
+.chapter__stage {
+  position: relative; min-height: 100svh;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  column-gap: clamp(36px, 4.6vw, 80px);
+  padding: 8svh var(--gutter);
+}
+.chapter__frame {
+  grid-column: 2; grid-row: 1;
+  position: relative; margin: 0;
+  width: var(--fw); aspect-ratio: 730 / 912;
+  border-radius: 18px; overflow: hidden;
+}
+.chapter__frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.06); }
+.chapter__title {
+  grid-column: 1; grid-row: 1; justify-self: end; text-align: right;
+  font-size: clamp(56px, 6.6vw, 124px); white-space: nowrap;
+}
+.chapter__text {
+  grid-column: 3; grid-row: 1; justify-self: start;
+  width: max-content; margin: 0; white-space: nowrap;
+  font-family: var(--serif); font-size: clamp(16px, 1.32vw, 21px); line-height: 1.4; letter-spacing: -.01em;
+  text-wrap: pretty;
+}
+
+
+.chapter { --fw: min(25vw, 64svh * .8); }
+
+/* un capitolo solo che resta fermo: «The start» si decifra in «Today», cambiano foto e testo */
+.chapter__frame .frame-b { position: absolute; inset: 0; opacity: 0; transform: scale(1.06); transition: opacity 1s var(--ease), transform 1.4s var(--ease); }
+.chapter.is-b .frame-b { opacity: 1; transform: none; }
+.chapter__text--b, .chapter.is-b .chapter__text--a { display: none; }
+.chapter.is-b .chapter__text--b { display: block; animation: swap .9s var(--ease); }
+.chapter:not(.is-b) .chapter__text--a.was-b { animation: swap .9s var(--ease); }
+.chapter__title .dec { color: rgba(239, 236, 230, .35); }
+@keyframes swap { from { opacity: 0; transform: translateY(14px); } }
+
+/* le parole si accendono una alla volta */
+[data-words] .w { color: var(--dim); transition: color .3s; }
+[data-words] .w.on { color: var(--paper); }
+[data-words] em .w.on, [data-words] .w em { color: var(--mute); }
+
+.closing {
+  display: grid; justify-items: center; text-align: center;
+  padding: clamp(140px, 24svh, 240px) var(--gutter) clamp(160px, 28svh, 280px);
+}
+.closing__line { margin: 0; font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 6.6vw, 116px); line-height: 1.02; letter-spacing: -.04em; }
+
+/* ---------- company ---------- */
+.company {
+  display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center;
+  padding: 0 var(--gutter);
+  overflow: hidden;
+}
+/* l'icona al centro: le tre parole escono da sotto e si mettono in colonna */
+.company__stage {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(28px, 5svh, 56px);
+  width: 100%; min-height: 100svh; padding: 8svh 0;
+}
+.company__core { position: relative; display: flex; flex-direction: column; align-items: center; }
+.company__icon { position: relative; z-index: 2; display: block; width: clamp(104px, 10.5vw, 176px); aspect-ratio: 1; border-radius: 24%; transition: transform .8s var(--ease); }
+.company__icon:hover { transform: scale(1.04) rotate(-3deg); }
+.company__icon svg { display: block; width: 100%; height: 100%; }
+.company__words {
+  position: relative; z-index: 1; margin: 0 0 clamp(20px, 3.4svh, 40px); padding: 0; list-style: none;
+  font-weight: 500; font-size: clamp(44px, 6.4vw, 112px); line-height: 1.02; letter-spacing: -.04em;
+}
+.company__words li { will-change: transform, opacity; }
+.company__words em { color: var(--mute); }
+.company__words .lm { display: inline-block; overflow: hidden; padding: .06em 0 .16em; margin-bottom: -.12em; vertical-align: top; white-space: pre; }
+.company__words .lc { display: inline-block; will-change: transform; }
+
+/* ---------- fondo pagina ---------- */
+.footer {
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+  padding: 44px var(--gutter) 48px; text-align: center;
+  border-top: 1px solid var(--line);
+}
+.footer__legal { margin: 0; font-size: 12px; color: rgba(239, 236, 230, .7); }
+.footer__social { display: flex; gap: 24px; }
+.footer__social a { display: block; width: 30px; height: 30px; transition: opacity .3s; }
+.footer__social a:hover { opacity: .55; }
+.footer__social svg { width: 100%; height: 100%; }
+
+/* ---------- telefono ---------- */
+@media (max-width: 820px) {
+  .hero__figure { height: 82svh; left: 56%; }
+  .hero__figure { transform: translateX(-50%) translateY(-9%) scale(1.16); }
+  .hero__back { display: block; top: 3.5svh; font-size: 34vw; }
+  .hero__name { top: 69svh; font-size: 30vw; }
+  .hero__track--full { display: none; }
+  .hero__track--last { display: flex; animation-direction: reverse; animation-duration: 30s; }
+  .hero__back .hero__track { animation-direction: normal; animation-duration: 24s; }
+  .company__words { font-size: 13vw; }
+  .closing { padding: 18svh var(--gutter) 6svh; }
+  .company__stage { padding: 4svh 0; }
+
+  /* sul telefono il capitolo sta tutto in uno schermo, anche con le barre di Safari */
+  .chapter { --fw: min(74vw, 40svh * .9); }
+  .chapter__stage { height: 100svh; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 56px var(--gutter) 40px; }
+  .chapter__frame { width: var(--fw); max-width: none; aspect-ratio: 9 / 10; align-self: center; border-radius: 14px; }
+  .chapter__title { order: -1; text-align: center; justify-self: auto; font-size: 13.5vw; }
+  /* le righe di «The start» restano intere come sono scritte */
+  .chapter__text--a, .chapter__text--b { white-space: nowrap; font-size: min(16px, 4.1vw) !important; }
+  .chapter__text { width: auto; max-width: 34em; min-height: 8.7em; font-size: 16px; line-height: 1.45; text-align: center; justify-self: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  .hero__figure { -webkit-mask-image: none; mask-image: none; }
+  .hero__name { opacity: 1; }
+  .hero__track { animation: none; }
+  [data-words] .w { color: var(--paper); }
+}
