@@ -226,7 +226,7 @@ main, .footer { position: relative; z-index: 1; }
   .company__stage { padding: 4svh 0; }
 
   /* sul telefono il capitolo sta tutto in uno schermo, anche con le barre di Safari */
-  .chapter { --fw: min(74vw, 40svh * .9); }
+  .chapter { --fw: min(86vw, 47svh * .9); }
   .chapter__stage { height: 100svh; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 56px var(--gutter) 40px; }
   .chapter__frame { width: var(--fw); max-width: none; aspect-ratio: 9 / 10; align-self: center; border-radius: 14px; }
   .chapter__title { order: -1; text-align: center; justify-self: auto; font-size: 13.5vw; }
